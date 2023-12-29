@@ -8,6 +8,7 @@ import {
 import React from "react";
 import Carousel from "react-native-snap-carousel";
 import { useNavigation } from "@react-navigation/native";
+import { image500 } from "../api/moviedb";
 
 var { width, height } = Dimensions.get("window");
 
@@ -38,10 +39,12 @@ export default function TrendingMovies({ data }) {
 }
 // MovieCard Component: The renderItem function renders a MovieCard component for each movie. It passes the item (the movie object) and a handleClick function to MovieCard.
 const MovieCard = ({ item, handleClick }) => {
+  // console.log("item.poster_path: ", item.poster_path); // vi tjekker om vi får fat i vores poster paths
   return (
     <TouchableWithoutFeedback onPress={() => handleClick(item)}>
       <Image
-        source={require("../assets/moviePoster1.jpg")}
+        // source={require("../assets/moviePoster1.jpg")}
+        source={{ uri: image500(item.poster_path) }} // Her kalder vi vores image fetch metode der skaffer billeder ud fra en imagepath fra movieDB hjemmesiden.
         style={{
           width: width * 0.6,
           height: height * 0.4,

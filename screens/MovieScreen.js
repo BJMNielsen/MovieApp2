@@ -16,6 +16,17 @@ import { styles, theme } from "../theme";
 import { LinearGradient } from "expo-linear-gradient";
 import Cast from "../components/cast";
 import MovieList from "../components/movieList";
+import Loading from "../components/loading";
+import {
+  fallbackMoviePoster,
+  fetchMovieDetails,
+  image500,
+} from "../api/moviedb";
+import {
+  fetchMovieCredits,
+  fetchTopRatedMovies,
+  fetchSimilarMovies,
+} from "../api/moviedb";
 
 var { width, height } = Dimensions.get("window");
 const ios = Platform.OS == "ios"; // const til at tjekke om platform er IOS
@@ -25,13 +36,51 @@ export default function MovieScreen() {
   const { params: item } = useRoute(); // Her får vi fat i den film, vi lige har passet, når vi trykker på en film og går ind på dens side.
   const [isFavourite, toggleFavourite] = useState(false); // Const for vores hearticon.
   const navigation = useNavigation();
-  const [cast, setCast] = useState([1, 2, 3, 4, 5]);
-  const [similarMovies, setSimilarMovies] = useState([1, 2, 3, 4, 5]);
+  const [cast, setCast] = useState([]);
+  const [similarMovies, setSimilarMovies] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [movie, setMovie] = useState({});
   let movieName = "Ant-man and the Wasp: Quantumania";
 
   useEffect(() => {
     // call api for movie details whenever the above params changes
-  }, [item]);
+    // console.log("item id/movie id: ", item.id);
+    setLoading(true);
+    getMovieDetails(item.id);
+    getMovieCredits(item.id);
+    getSimilarMovies(item.id);
+  }, [item]); // Dependency Array ([item]): The useEffect hook is set to run whenever the item object changes. In this context, item seems to be derived from useRoute, likely representing the current route's parameters, which includes details about a selected movie (such as its ID).
+
+  // FETCH MOVIE DETAILS \\
+  const getMovieDetails = async (id) => {
+    const data = await fetchMovieDetails(id);
+    // console.log("got movie details: ", data);
+    // We check if we get the data, and only then setMovie
+    if (data) {
+      setMovie(data);
+    }
+    setLoading(false);
+  };
+
+  // FETCH MOVIE CREDITS \\
+  const getMovieCredits = async (id) => {
+    const data = await fetchMovieCredits(id);
+    // console.log("got movie credits: ", data);
+    if (data && data.cast) {
+      setCast(data.cast);
+    }
+    setLoading(false);
+  };
+
+  // FETCH SIMILAR MOVIES \\
+  const getSimilarMovies = async (id) => {
+    const data = await fetchSimilarMovies(id);
+    // console.log("got similar movies: ", data);
+    if (data && data.results) {
+      setSimilarMovies(data.results);
+    }
+    setLoading(false);
+  };
 
   return (
     <ScrollView
@@ -60,63 +109,89 @@ export default function MovieScreen() {
             />
           </TouchableOpacity>
         </SafeAreaView>
-        <View>
-          <Image
-            source={require("../assets/moviePoster2.jpg")}
-            style={{ width, height: height * 0.55 }}
-          />
-          <LinearGradient
-            colors={[
-              "transparent",
-              "rgba(23, 23, 23, 0.8)",
-              "rgba(23, 23, 23, 1)",
-            ]}
-            style={{ width, height: height * 0.4 }}
-            start={{ x: 0.5, y: -0 }}
-            end={{ x: 0.5, y: 1 }}
-            className="absolute bottom-0"
-          />
-        </View>
+
+        {
+          // when there is loading we show the loading component, otherwise we show the movieposter and gradient
+          loading ? (
+            <Loading />
+          ) : (
+            <View>
+              <Image
+                // source={require("../assets/moviePoster2.jpg")}
+                source={{
+                  uri: image500(movie?.poster_path) || fallbackMoviePoster,
+                }}
+                style={{ width, height: height * 0.55 }}
+              />
+              <LinearGradient
+                colors={[
+                  "transparent",
+                  "rgba(23, 23, 23, 0.8)",
+                  "rgba(23, 23, 23, 1)",
+                ]}
+                style={{ width, height: height * 0.4 }}
+                start={{ x: 0.5, y: -0 }}
+                end={{ x: 0.5, y: 1 }}
+                className="absolute bottom-0"
+              />
+            </View>
+          )
+        }
       </View>
 
       {/* Movie details */}
       <View style={{ marginTop: -(height * 0.09) }} className="space-y-3">
         {/* Title */}
         <Text className="text-white text-center text-3xl font-bold tracking-wider">
-          {movieName}
+          {movie?.title}
         </Text>
         {/* Status, release date, runtime */}
-        <Text className="text-neutral-400 font-semibold text-base text-center">
-          Released | 2020 | 170 min
-        </Text>
+        {movie?.id ? (
+          <Text className="text-neutral-400 font-semibold text-base text-center">
+            {movie?.status} | {movie?.release_date?.split("-")[0]} |{" "}
+            {movie?.runtime} min
+          </Text>
+        ) : null}
+
         {/* Genres */}
         <View className="flex-row justify-center mx-4 space-x-2">
-          <Text className="text-neutral-400 font-semibold text-base text-center">
-            Action |
-          </Text>
-          <Text className="text-neutral-400 font-semibold text-base text-center">
+          {movie?.genres?.map((genre, index) => {
+            let showDot = index + 1 != movie.genres.length;
+            return (
+              <Text
+                key={index}
+                className="text-neutral-400 font-semibold text-base text-center"
+              >
+                {genre?.name} {showDot ? "|" : null}
+              </Text>
+            );
+          })}
+
+          {/*<Text className="text-neutral-400 font-semibold text-base text-center">
             Thriller |
           </Text>
           <Text className="text-neutral-400 font-semibold text-base text-center">
             Comedy
-          </Text>
+          </Text>*/}
         </View>
+
         {/* Description for movie */}
         <Text className="text-neutral-400 mx-4 tracking-wide">
-          Scott Lang and Hope Van Dyne are dragged into the Quantum Realm, along
-          with Hope's parents and Scott's daughter Cassie. Together they must
-          find a way to escape, but what secrets is Hope's mother hiding? And
-          who is the mysterious Kang?
+          {movie?.overview}
         </Text>
       </View>
 
       {/* Cast , we will pass the cast members as an array*/}
-      <Cast navigation={navigation} cast={cast} />
+      {cast.length > 0 && <Cast navigation={navigation} cast={cast} />}
 
       {/* Similar movies*/}
-      <MovieList title="Similar Movies" hideSeeAll={true} data={similarMovies} />
-
-
+      {similarMovies.length > 0 && (
+        <MovieList
+          title="Similar Movies"
+          hideSeeAll={true}
+          data={similarMovies}
+        />
+      )}
     </ScrollView>
   );
 }
