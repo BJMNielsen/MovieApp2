@@ -6,7 +6,6 @@ const apiBaseUrl = "https://api.themoviedb.org/3";
 const trendingsMoviesEndpoint = `${apiBaseUrl}/trending/movie/day?api_key=${apiKey}`;
 const upcomingMoviesEndpoint = `${apiBaseUrl}/movie/upcoming?api_key=${apiKey}`;
 const topRatedMoviesEndpoint = `${apiBaseUrl}/movie/top_rated?api_key=${apiKey}`;
-//                  https://api.themoviedb.org/3/search/movie
 const searchMoviesEndpoint = `${apiBaseUrl}/search/movie?api_key=${apiKey}`;
 
 // DYNAMIC ENDPOINTS

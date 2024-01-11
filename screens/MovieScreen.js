@@ -33,23 +33,22 @@ const ios = Platform.OS == "ios"; // const til at tjekke om platform er IOS
 const topMargin = ios ? "" : " mt-3"; // Margin til android platform, så vores icons kan ses på MovieScreen
 
 export default function MovieScreen() {
-  const { params: item } = useRoute(); // Her får vi fat i den film, vi lige har passet, når vi trykker på en film og går ind på dens side.
+  const { params: recievedMovie } = useRoute(); // Her får vi fat i den film, vi lige har passet, når vi trykker på en film og går ind på dens side.
   const [isFavourite, toggleFavourite] = useState(false); // Const for vores hearticon.
   const navigation = useNavigation();
   const [cast, setCast] = useState([]);
   const [similarMovies, setSimilarMovies] = useState([]);
   const [loading, setLoading] = useState(false);
   const [movie, setMovie] = useState({});
-  let movieName = "Ant-man and the Wasp: Quantumania";
 
   useEffect(() => {
-    // call api for movie details whenever the above params changes
-    // console.log("item id/movie id: ", item.id);
+    // call api for movie details whenever the above param recievedMovie changes.
+    // console.log("item id/movie id: ", recievedMovie.id);
     setLoading(true);
-    getMovieDetails(item.id);
-    getMovieCredits(item.id);
-    getSimilarMovies(item.id);
-  }, [item]); // Dependency Array ([item]): The useEffect hook is set to run whenever the item object changes. In this context, item seems to be derived from useRoute, likely representing the current route's parameters, which includes details about a selected movie (such as its ID).
+    getMovieDetails(recievedMovie.id);
+    getMovieCredits(recievedMovie.id);
+    getSimilarMovies(recievedMovie.id);
+  }, [recievedMovie]); // Dependency Array ([item]): The useEffect hook is set to run whenever the item object changes. In this context, item seems to be derived from useRoute, likely representing the current route's parameters, which includes details about a selected movie (such as its ID).
 
   // FETCH MOVIE DETAILS \\
   const getMovieDetails = async (id) => {
@@ -62,7 +61,7 @@ export default function MovieScreen() {
     setLoading(false);
   };
 
-  // FETCH MOVIE CREDITS \\
+  // FETCH MOVIE CREDITS(CAST) \\
   const getMovieCredits = async (id) => {
     const data = await fetchMovieCredits(id);
     // console.log("got movie credits: ", data);
@@ -87,7 +86,7 @@ export default function MovieScreen() {
       contentContainerStyle={{ paddingBottom: 20 }}
       className="flex-1 bg-neutral-900"
     >
-      {/* back button and movie poster */}
+      {/* BACK button and HEART/favorite icon and also the MOVIE POSTER*/}
       <View className="w-full">
         <SafeAreaView
           className={

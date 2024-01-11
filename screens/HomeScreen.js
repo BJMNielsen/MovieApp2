@@ -75,7 +75,7 @@ export default function HomeScreen() {
   return (
     <View className="flex-1 bg-neutral-800">
       {/* search bar and logo */}
-      <SafeAreaView className={ios ? "-mb-2" : "mb-3 mt-2"}>
+      <SafeAreaView className={ios ? "-mb-2" : "mb-3 mt-2"}> 
         <View className="flex-row justify-between items-center mx-4">
           <Bars3CenterLeftIcon size="30" strokeWidth={2} color="white" />
           <Text className="text-white text-3xl fontbold">
@@ -105,7 +105,7 @@ export default function HomeScreen() {
             <MovieList title="Upcoming Movies" data={upcoming} />
 
             {/* Top rated movies */}
-            <MovieList title="Top Rated Movies" data={topRated} />
+            <MovieList title="Top Rated Movies" data={topRated} /> 
           </ScrollView>
         )
       }

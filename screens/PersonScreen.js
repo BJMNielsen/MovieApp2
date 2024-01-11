@@ -27,7 +27,7 @@ const verticalMargin = ios ? "" : " my-3";
 var { width, height } = Dimensions.get("window");
 
 export default function PersonScreen() {
-  const { params: item } = useRoute(); // Her får vi fat i de params vi sender fra MovieScreen
+  const { params: chosenPerson } = useRoute(); // Her får vi fat i de params vi sender fra MovieScreen og herunder Cast component (der returner én person, dvs den man klikker på)
   const navigation = useNavigation();
   const [isFavourite, toggleFavourite] = useState(false); // Const for vores hearticon.
   const [personMovies, setPersonMovies] = useState([]); // indeholder personens andre film de har været med i
@@ -36,10 +36,10 @@ export default function PersonScreen() {
 
   useEffect(() => {
     setLoading(true);
-    console.log("person: ", item);
-    getPersonDetails(item.id);
-    getPersonMovies(item.id);
-  }, [item]);
+    //console.log("person: ", chosenPerson);
+    getPersonDetails(chosenPerson.id);
+    getPersonMovies(chosenPerson.id);
+  }, [chosenPerson]);
 
   // FETCH PERSON DETAILS \\
   const getPersonDetails = async (id) => {
@@ -54,7 +54,7 @@ export default function PersonScreen() {
   // FETCH PERSON MOVIES \\
   const getPersonMovies = async (id) => {
     const data = await fetchPersonMovies(id);
-    console.log("got person movies: ", data);
+    //console.log("got person movies: ", data);
     if (data && data.cast) {
       setPersonMovies(data.cast);
     }

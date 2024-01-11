@@ -29,9 +29,9 @@ export default function SearchScreen() {
     if (value && value.length > 2) {
       setLoading(true);
       searchMovies({
-        query: value,
-        include_adult: "false",
-        language: "en-US",
+        query: value, // The string to search for (e.g., a movie title, actor's name).
+        include_adult: "false", //  A boolean to include or exclude adult content in the results.
+        language: "en-US", // return result in english
         page: "1",
       }).then((data) => {
         setLoading(false);

@@ -2,7 +2,7 @@ import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native";
 import React from "react";
 import { fallbackPersonImage, image185 } from "../api/moviedb";
 
-// Vi modtager både cast og navigation fra den komponent der bruger Cast, dvs vpres MovieScreen
+// Vi modtager både cast og navigation fra den komponent der bruger Cast, dvs vores MovieScreen
 export default function Cast({ cast, navigation }) {
   let personName = "Keanu Reeves";
   let characterName = "John Wick";
